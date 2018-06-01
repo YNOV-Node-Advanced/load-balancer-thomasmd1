@@ -1,29 +1,16 @@
-const path = require("path");
-const express = require("express");
+const body = require('body-parser');
+const express = require('express');
+   
+const app1 = express(); 
 
-const http = require('http');
-const WebSocket = require('ws');
 
-const app = express();
+app1.use(body.json());
+   
+const handler = serverNum => (req, res) => {
+ console.log(`server ${serverNum}`, req.method, req.url, req.body);
+ res.send(`Hello from server ${serverNum}!`);
+};
 
-const PUBLIC_FOLDER = path.join(__dirname, "../public");
-const PORT = process.env.PORT || 5002;
-
-const server = http.createServer(app);
-
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws) => {
-  ws.on('message', (data) => {
-  });
-  ws.on('close', (err) => {
-    console.log('Client has disconnected');
-  });
-});
-
-app.get("/", (req, res) => {
-    res.end("Server listening on http://localhost:" + PORT);
-});
-
-app.use(express.static(PUBLIC_FOLDER));
-server.listen(PORT, () => console.log('Server listening on http://localhost:' + PORT));
+app1.get('*', handler(1)).post('*', handler(1));
+                 
+app1.listen(5003); 
